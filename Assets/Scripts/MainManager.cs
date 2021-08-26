@@ -12,6 +12,8 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
+    public Text hiScoreText;
+    public GameObject goBackMenuButton;
     
     private bool m_Started = false;
     private int m_Points;
@@ -22,6 +24,9 @@ public class MainManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        hiScoreText.text =
+            $"Best Score : {GameManager.instance.data.highScoredName} : {GameManager.instance.data.highScore}";
+        AddPoint(0);
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -65,12 +70,28 @@ public class MainManager : MonoBehaviour
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = $"{GameManager.instance.data.playerName} Score : {m_Points}";
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        goBackMenuButton.SetActive(true);
+
+        if (GameManager.instance.data.highScore < m_Points)
+        {
+            GameManager.instance.data.highScore = m_Points;
+            GameManager.instance.data.highScoredName = GameManager.instance.data.playerName;
+            GameManager.instance.SaveData();
+            hiScoreText.text =
+                $"Best Score : {GameManager.instance.data.highScoredName} : {GameManager.instance.data.highScore}";
+        }
     }
+
+    public void ClickedGoBackMenu()
+    {
+        SceneManager.LoadScene(0);
+    }
+    
 }
